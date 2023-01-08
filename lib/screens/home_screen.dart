@@ -5,7 +5,7 @@ import 'package:webtoon/services/api_service.dart';
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
 
-  Future<List<WebtoonModel>> webtoons = ApiService.getTodaysToons();
+  final Future<List<WebtoonModel>> webtoons = ApiService.getTodaysToons();
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +28,52 @@ class HomeScreen extends StatelessWidget {
         future: webtoons,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return const Text("There is data!");
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 15,
+                ),
+                Expanded(
+                  child: makeList(snapshot),
+                ),
+              ],
+            );
           }
-          return const Text("Loading....");
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         },
+      ),
+    );
+  }
+
+  ListView makeList(AsyncSnapshot<List<WebtoonModel>> snapshot) {
+    return ListView.separated(
+      scrollDirection: Axis.vertical,
+      itemCount: snapshot.data!.length,
+      itemBuilder: (context, index) {
+        var webtoon = snapshot.data![index];
+        return Column(
+          children: [
+            SizedBox(
+              width: 100,
+              // child: CachedNetworkImage(
+              //   imageUrl: webtoon.img,
+              //   placeholder: (context, url) =>
+              //       const CircularProgressIndicator(),
+              // ),
+              child: Image.network(webtoon.img),
+            ),
+            Text(webtoon.title),
+            // Image.network()
+
+            // Image.network(webtoon.img),
+            // Image.network(webtoon.img),
+          ],
+        );
+      },
+      separatorBuilder: (context, index) => const SizedBox(
+        height: 20,
       ),
     );
   }
